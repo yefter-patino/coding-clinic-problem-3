@@ -1,4 +1,4 @@
-# yefter-ebs-unattached-volumes
+# Coding Clinic Problem #3
 
 A Python (boto3) tool that finds **unattached EBS volumes older than N days** in one AWS account or in
 **every account of an AWS Organization**, writes a **cost report**, and can produce a **deletion plan**
