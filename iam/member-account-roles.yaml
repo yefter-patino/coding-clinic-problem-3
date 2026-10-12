@@ -1,0 +1,130 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Roles the EBS cleanup tool assumes in a member account: a read-only audit role, and an
+  optional cleanup role that can snapshot and delete volumes. Deploy to every member account
+  (for example with a CloudFormation StackSet from the management account).
+
+Parameters:
+  NamePrefix:
+    Type: String
+    Default: yefter
+    AllowedPattern: "[A-Za-z0-9+=,.@_-]{1,40}"
+    Description: Roles are named <prefix>-ebs-audit and <prefix>-ebs-cleanup.
+  TrustedPrincipalArn:
+    Type: String
+    AllowedPattern: "arn:aws[a-z-]*:iam::[0-9]{12}:(root|user/.+|role/.+)"
+    Description: >-
+      Who may assume these roles, for example the role or user that runs the tool in the
+      management account (arn:aws:iam::111111111111:role/some-role).
+  ExternalId:
+    Type: String
+    Default: ""
+    Description: Optional. When set, callers must pass this ExternalId (--external-id).
+  CreateCleanupRole:
+    Type: String
+    AllowedValues: ["true", "false"]
+    Default: "false"
+    Description: Create the cleanup role too? Leave "false" if you only want reports.
+
+Conditions:
+  HasExternalId: !Not [!Equals [!Ref ExternalId, ""]]
+  MakeCleanupRole: !Equals [!Ref CreateCleanupRole, "true"]
+
+Resources:
+  AuditRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "${NamePrefix}-ebs-audit"
+      Description: Read-only. Lets the EBS cleanup tool list volumes and regions.
+      MaxSessionDuration: 3600
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: !Ref TrustedPrincipalArn
+            Action: sts:AssumeRole
+            Condition: !If
+              - HasExternalId
+              - StringEquals:
+                  sts:ExternalId: !Ref ExternalId
+              - !Ref AWS::NoValue
+      Policies:
+        - PolicyName: !Sub "${NamePrefix}-ebs-audit-read"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Sid: ReadVolumesAndRegions
+                Effect: Allow
+                Action:
+                  - ec2:DescribeVolumes
+                  - ec2:DescribeRegions
+                Resource: "*"
+      Tags:
+        - Key: Name
+          Value: !Sub "${NamePrefix}-ebs-audit"
+        - Key: ManagedBy
+          Value: cloudformation
+
+  CleanupRole:
+    Type: AWS::IAM::Role
+    Condition: MakeCleanupRole
+    Properties:
+      RoleName: !Sub "${NamePrefix}-ebs-cleanup"
+      Description: Can snapshot and delete EBS volumes. Only the "apply" command should use it.
+      MaxSessionDuration: 3600
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: !Ref TrustedPrincipalArn
+            Action: sts:AssumeRole
+            Condition: !If
+              - HasExternalId
+              - StringEquals:
+                  sts:ExternalId: !Ref ExternalId
+              - !Ref AWS::NoValue
+      Policies:
+        - PolicyName: !Sub "${NamePrefix}-ebs-cleanup-delete"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Sid: Read
+                Effect: Allow
+                Action:
+                  - ec2:DescribeVolumes
+                  - ec2:DescribeSnapshots
+                  - ec2:DescribeRegions
+                Resource: "*"
+              - Sid: SnapshotBeforeDelete
+                Effect: Allow
+                Action: ec2:CreateSnapshot
+                Resource:
+                  - !Sub "arn:${AWS::Partition}:ec2:*:${AWS::AccountId}:volume/*"
+                  - !Sub "arn:${AWS::Partition}:ec2:*::snapshot/*"
+              - Sid: TagTheSnapshotsItCreates
+                Effect: Allow
+                Action: ec2:CreateTags
+                Resource: !Sub "arn:${AWS::Partition}:ec2:*::snapshot/*"
+                Condition:
+                  StringEquals:
+                    ec2:CreateAction: CreateSnapshot
+              - Sid: DeleteVolumes
+                Effect: Allow
+                Action: ec2:DeleteVolume
+                Resource: !Sub "arn:${AWS::Partition}:ec2:*:${AWS::AccountId}:volume/*"
+      Tags:
+        - Key: Name
+          Value: !Sub "${NamePrefix}-ebs-cleanup"
+        - Key: ManagedBy
+          Value: cloudformation
+
+Outputs:
+  AuditRoleName:
+    Description: Use with --role-name for the scan command.
+    Value: !Ref AuditRole
+  CleanupRoleName:
+    Condition: MakeCleanupRole
+    Description: Use with --role-name for the apply command.
+    Value: !Ref CleanupRole

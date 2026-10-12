@@ -1,0 +1,17 @@
+$ python -m ebs_cleanup scan --scope organization --role-name yefter-ebs-audit \
+      --min-age-days 30 --protect-tags do-not-delete --report-tags Name,Owner --write-plan
+Scanned 3 account(s), 6 account/region pair(s).
+Found 7 old unattached volume(s), 1 protected by tag.
+Estimated cost of the unprotected ones: $1,587.00 per month, $19,044.00 per year.
+Files written:
+  examples/sample-output/unattached-volumes-20261012T154347Z.csv
+  examples/sample-output/summary.md
+  examples/sample-output/deletion-plan.json
+Review the plan, then run:  python -m ebs_cleanup apply --plan <plan file>
+(exit code 0)
+
+$ python -m ebs_cleanup apply --plan <that plan file>          # dry run
+DRY RUN: nothing was changed. Add --execute to delete.
+  would_delete: 6
+Results: examples/sample-output/apply-results-20261012T154348Z.csv
+(exit code 0)

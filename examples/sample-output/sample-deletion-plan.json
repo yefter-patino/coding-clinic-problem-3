@@ -1,0 +1,111 @@
+{
+  "plan_version": 1,
+  "generated_at": "2026-10-12T15:43:46Z",
+  "generated_by": "arn:aws:sts::123456789012:user/moto",
+  "parameters": {
+    "min_age_days": 30,
+    "scope": "organization",
+    "protect_tags": [
+      "do-not-delete"
+    ]
+  },
+  "totals": {
+    "delete_count": 6,
+    "skip_count": 1,
+    "estimated_monthly_savings_usd": 1587.0
+  },
+  "instructions": "Review every item. To keep a volume, change its action to 'skip' (or delete the item). Then run:  python -m ebs_cleanup apply --plan <this file>  (dry run by default).",
+  "items": [
+    {
+      "account_id": "123456789012",
+      "account_name": "master",
+      "region": "us-east-1",
+      "volume_id": "vol-2a4b27f46743466c9",
+      "size_gb": 200,
+      "volume_type": "gp2",
+      "created": "2026-03-16T15:43:44Z",
+      "age_days": 210,
+      "est_monthly_cost_usd": 20.0,
+      "action": "delete",
+      "reason": "unattached and at least 30 days old"
+    },
+    {
+      "account_id": "424396616856",
+      "account_name": "payments-prod",
+      "region": "us-east-1",
+      "volume_id": "vol-47af1eb917d987cd3",
+      "size_gb": 500,
+      "volume_type": "gp3",
+      "created": "2025-09-07T15:43:44Z",
+      "age_days": 400,
+      "est_monthly_cost_usd": 60.0,
+      "action": "skip",
+      "reason": "tag do-not-delete"
+    },
+    {
+      "account_id": "424396616856",
+      "account_name": "payments-prod",
+      "region": "us-east-1",
+      "volume_id": "vol-638d2793ed4c2f0a2",
+      "size_gb": 1000,
+      "volume_type": "io2",
+      "created": "2026-07-09T15:43:44Z",
+      "age_days": 95,
+      "est_monthly_cost_usd": 1425.0,
+      "action": "delete",
+      "reason": "unattached and at least 30 days old"
+    },
+    {
+      "account_id": "424396616856",
+      "account_name": "payments-prod",
+      "region": "us-west-2",
+      "volume_id": "vol-9ca09970e694a1f95",
+      "size_gb": 300,
+      "volume_type": "gp3",
+      "created": "2026-08-12T15:43:44Z",
+      "age_days": 61,
+      "est_monthly_cost_usd": 24.0,
+      "action": "delete",
+      "reason": "unattached and at least 30 days old"
+    },
+    {
+      "account_id": "988264380294",
+      "account_name": "data-platform-dev",
+      "region": "us-east-1",
+      "volume_id": "vol-46195ff9a9a814b48",
+      "size_gb": 250,
+      "volume_type": "gp3",
+      "created": "2026-07-29T15:43:44Z",
+      "age_days": 75,
+      "est_monthly_cost_usd": 20.0,
+      "action": "delete",
+      "reason": "unattached and at least 30 days old"
+    },
+    {
+      "account_id": "988264380294",
+      "account_name": "data-platform-dev",
+      "region": "us-east-1",
+      "volume_id": "vol-d9a1f61781b924ab2",
+      "size_gb": 100,
+      "volume_type": "gp3",
+      "created": "2026-08-25T15:43:44Z",
+      "age_days": 48,
+      "est_monthly_cost_usd": 8.0,
+      "action": "delete",
+      "reason": "unattached and at least 30 days old"
+    },
+    {
+      "account_id": "988264380294",
+      "account_name": "data-platform-dev",
+      "region": "us-east-1",
+      "volume_id": "vol-e092efe7d8a4e8f0c",
+      "size_gb": 2000,
+      "volume_type": "st1",
+      "created": "2026-06-04T15:43:44Z",
+      "age_days": 130,
+      "est_monthly_cost_usd": 90.0,
+      "action": "delete",
+      "reason": "unattached and at least 30 days old"
+    }
+  ]
+}

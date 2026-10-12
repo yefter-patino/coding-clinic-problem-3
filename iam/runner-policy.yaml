@@ -1,0 +1,36 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Permissions for whoever runs the EBS cleanup tool (deploy in the management account, or in
+  the delegated administrator account, then attach the policy to the user or role that runs it).
+
+Parameters:
+  NamePrefix:
+    Type: String
+    Default: yefter
+    AllowedPattern: "[A-Za-z0-9+=,.@_-]{1,40}"
+    Description: Must match the prefix used for the roles in member-account-roles.yaml.
+
+Resources:
+  RunnerPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: !Sub "${NamePrefix}-ebs-cleanup-runner"
+      Description: List the organization's accounts and assume the EBS cleanup roles in them.
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: ListAccounts
+            Effect: Allow
+            Action: organizations:ListAccounts
+            Resource: "*"
+          - Sid: AssumeToolRoles
+            Effect: Allow
+            Action: sts:AssumeRole
+            Resource:
+              - !Sub "arn:${AWS::Partition}:iam::*:role/${NamePrefix}-ebs-audit"
+              - !Sub "arn:${AWS::Partition}:iam::*:role/${NamePrefix}-ebs-cleanup"
+
+Outputs:
+  PolicyArn:
+    Description: Attach this policy to the user or role that runs the tool.
+    Value: !Ref RunnerPolicy

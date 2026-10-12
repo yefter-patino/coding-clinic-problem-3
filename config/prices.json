@@ -1,0 +1,33 @@
+{
+  "_note": "List prices in USD for the regions below. Edit this file for your regions and check every number against https://aws.amazon.com/ebs/pricing/ before relying on the estimates. Regions that are not listed fall back to default_region and are flagged in the report. Volume types that are not listed are counted as 0 and flagged.",
+  "currency": "USD",
+  "price_list_date": "2026-10-12",
+  "sources": [
+    "https://aws.amazon.com/ebs/pricing/",
+    "https://aws.amazon.com/ebs/volume-types/"
+  ],
+  "default_region": "us-east-1",
+  "regions": {
+    "us-east-1": {
+      "gp3": {
+        "gb_month": 0.08,
+        "free_iops": 3000,
+        "iops_month": 0.005,
+        "free_mbps": 125,
+        "mbps_month": 0.04
+      },
+      "gp2": { "gb_month": 0.10 },
+      "io1": { "gb_month": 0.125, "iops_month": 0.065 },
+      "io2": {
+        "gb_month": 0.125,
+        "iops_tiers": [
+          { "up_to": 32000, "price": 0.065 },
+          { "up_to": 64000, "price": 0.046 },
+          { "up_to": null, "price": 0.032 }
+        ]
+      },
+      "st1": { "gb_month": 0.045 },
+      "sc1": { "gb_month": 0.015 }
+    }
+  }
+}

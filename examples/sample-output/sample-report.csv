@@ -1,0 +1,8 @@
+account_id,account_name,region,volume_id,size_gb,volume_type,iops,throughput_mbps,encrypted,availability_zone,source_snapshot_id,created,age_days,est_monthly_cost_usd,price_note,protected,protect_reason,k8s_pvc,tag_Name,tag_Owner
+123456789012,master,us-east-1,vol-2a4b27f46743466c9,200,gp2,,,False,us-east-1a,,2026-03-16T15:43:44Z,210,20.00,,False,,,old-jenkins-workspace,platform
+424396616856,payments-prod,us-east-1,vol-47af1eb917d987cd3,500,gp3,6000,250,False,us-east-1c,,2025-09-07T15:43:44Z,400,60.00,,True,tag do-not-delete,,audit-archive,security
+424396616856,payments-prod,us-east-1,vol-638d2793ed4c2f0a2,1000,io2,20000,,False,us-east-1a,,2026-07-09T15:43:44Z,95,1425.00,,False,,,orders-db-old-replica,payments
+424396616856,payments-prod,us-west-2,vol-9ca09970e694a1f95,300,gp3,3000,,False,us-west-2a,,2026-08-12T15:43:44Z,61,24.00,"no prices for us-west-2, used us-east-1",False,,,dr-restore-test,payments
+988264380294,data-platform-dev,us-east-1,vol-46195ff9a9a814b48,250,gp3,3000,,False,us-east-1b,,2026-07-29T15:43:44Z,75,20.00,,False,,,notebook-home,data
+988264380294,data-platform-dev,us-east-1,vol-d9a1f61781b924ab2,100,gp3,3000,,False,us-east-1a,,2026-08-25T15:43:44Z,48,8.00,,False,,data-kafka-2,,data
+988264380294,data-platform-dev,us-east-1,vol-e092efe7d8a4e8f0c,2000,st1,,,False,us-east-1a,,2026-06-04T15:43:44Z,130,90.00,,False,,,logs-scratch,

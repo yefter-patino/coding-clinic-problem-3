@@ -1,0 +1,5 @@
+-r requirements.txt
+moto[ec2,organizations,sts,iam]>=5.0
+pytest>=8.0
+ruff>=0.5
+cfn-lint>=1.0

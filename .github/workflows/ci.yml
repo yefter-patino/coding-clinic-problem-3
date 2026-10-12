@@ -1,0 +1,42 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: requirements-dev.txt
+
+      - name: Install
+        run: pip install -r requirements-dev.txt
+
+      - name: Lint
+        run: ruff check .
+
+      - name: Formatting
+        run: ruff format --check .
+
+      - name: Config and policy files are valid JSON
+        run: |
+          for f in config/prices.json iam/*.json; do
+            python -m json.tool "$f" > /dev/null && echo "ok $f"
+          done
+
+      - name: CloudFormation templates
+        run: cfn-lint iam/*.yaml
+
+      - name: Tests (mock AWS, no credentials needed)
+        run: pytest -q
